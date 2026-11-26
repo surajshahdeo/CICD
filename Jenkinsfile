@@ -1,19 +1,16 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'node20'
-    }
-
     stages {
-        stage('Install') {
+        stage('Build Image') {
             steps {
-                sh 'npm ci'
+                sh 'docker build -t cicd-app .'
             }
         }
-        stage('Build') {
+        stage('Deploy') {
             steps {
-                sh 'npm run build'
+                sh 'docker rm -f cicd-app || true'
+                sh 'docker run -d --name cicd-app -p 3001:80 cicd-app'
             }
         }
     }
